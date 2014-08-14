@@ -1,4 +1,4 @@
-# Location Schedules To XML Writer is free software: you can redistribute it and/or modify
+# calendar_to_XML is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #==================================================================
-#PURPOSE
+# PURPOSE: Take UVic food service calendar data and exports it in XML.
 
 
 from xml.etree.ElementTree import Element, SubElement, tostring
@@ -20,7 +20,7 @@ from file_writer_handler import send_job, execute_jobs
 
 # Format Output
 # Purpose: Get data into xml format
-def write_schedules_to_Xml(list_of_schedules):
+def write_to_Xml(list_of_schedules):
     print 'Formating Output'
 
     for schedule in list_of_schedules:

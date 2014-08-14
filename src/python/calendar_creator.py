@@ -1,5 +1,5 @@
-# UVic_Food_Service_Hours is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
+# calendar_creator is free software: you can redistribute it and/or modify
+#    it is under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
@@ -11,22 +11,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #==================================================================
-# PURPOSE:
-# 
+# PURPOSE: gets food service hour of operation data from UVic websites and 
+# exports it to either XML or JSON
 
 
-import urllib2
-import Queue
-import re 
+from calendar import Calendar
+from calendar_to_XML import write_to_Xml
+from calendar_to_Json import write_to_Json
 from datetime import date
 from dateutil import parser
 from BeautifulSoup import BeautifulSoup
-
-
-# custom files in this project
-from term_schedule import TermSchedule
-from location_schedules_to_XML_writer import write_schedules_to_Xml
-
+import Queue
+import re 
+from soup_handler import find_data_in_soup, make_soup
+import urllib2
 
 #what day of the week is it?  0-6 = Sunday-Saturday
 day = date.today()
@@ -34,87 +32,51 @@ day = date.today()
 
 # Get Dates
 # Purpose: Go through webpage and extract dates
-# Use these to create schedules with start and end dates
-def get_Dates(value, key):
-    schedules_on_this_page = []
+# Use these to create calendar with start and end dates
+def get_dates(value, key):
     soup = make_soup(value)
-    scheduleDates = Queue.Queue()
+    calendarDates = Queue.Queue()
 
-    listOfDates = findDataInSoup(soup)    
-    for aDate in listOfDates:
-        scheduleDates.put(aDate)
+    for aDate in find_data_in_soup(soup):
+        calendarDates.put(aDate)
 
-    while not scheduleDates.empty() and scheduleDates.qsize() %2 ==0:
-        aSchedule = create_schedule(str(scheduleDates.get()), str(scheduleDates.get()), key, value)            
-        schedules_on_this_page.append(aSchedule)
+    calendars_on_this_page = []
+    # While we have pairs of calendar dates
+    while not calendarDates.empty() and calendarDates.qsize() %2 ==0:
+        aCalendar = create_calendar(
+            str(calendarDates.get()), 
+            str(calendarDates.get()), 
+            key, value)            
+        calendars_on_this_page.append(aCalendar)
 
-    return schedules_on_this_page, soup
+    return calendars_on_this_page, soup
+  
 
-
-# Find Data in Soup
-# Purpose: Searches the soup for string containing dates for schedule
-# Returns a list of date items ('Month day, year')
-def findDataInSoup(soup):
-    aList =[]
-    linesWithH4Tags = soup.findAll('h4')
-
-    listOfRelevantData = get_lines_with_hours(linesWithH4Tags)
-    # After the above call we now have a list of strings
-    # Example string: 'Hours of operation between the dates of Saturday, 
-    # Apr 26, 2014 and Wednesday, Aug 20, 2014'
-
-    for item in listOfRelevantData:
-        aList.extend(get_months(item))
-
-    return aList
-
-
-# Make Soup
-# Purpose: use Baautiful soup to querry passed in webpage
-def make_soup(aUrl):
-    soup = None
-    #Testing with internet
-    # try:
-    #     webpage = urllib2.urlopen(aUrl)
-    # except:
-    #     print "failed to read webpage"
-    #     
-    # soup = BeautifulSoup(webpage.read())
-
-    try:
-        soup = BeautifulSoup(open(aUrl))
-    except:
-        print "failed to read local webpage"    
-    return soup
-      
-
-# Create Schedule
-# Purpose: 'Main' method, passes in urls for locations, creates schedules for each location
-#           writes schedules to xml file
-def get_schedules(placesDictionary):
-    # all the schedules per food location. Usually there are 2 or 3 schedules per location
+# get calendars
+# Purpose: 'Main' method, passes in urls for locations, creates calendars for each location
+# writes schedules to xml file
+def get_calendars(placesDictionary):
+    # all the calendars per food location. Usually there are 2 or 3 calendars per location
     list_of_schedules = []
 
     for key, value in placesDictionary.iteritems():
-        schedules_on_this_page, soup = get_Dates(value, key)
-        get_Tables(soup, list_of_schedules, schedules_on_this_page)
+        schedules_on_this_page, soup = get_dates(value, key)
+        get_tables(soup, list_of_schedules, schedules_on_this_page)
         
-    write_schedules_to_Xml(list_of_schedules)
+    write_to_Xml(list_of_schedules)
     return True
 
 
-# Create Schedule
-# Purpose:  Creates a Term Schedule Object
-def create_schedule(tempStartDate, tempEndDate, placeName, url):
-    print 'Creating schedule for ', placeName
-    aSchedule = TermSchedule(tempStartDate, tempEndDate, placeName,url)
-    return aSchedule
-
+# Create calendar
+# Purpose:  Creates a calendar Object
+def create_calendar(tempStartDate, tempEndDate, placeName, url):
+    aCalendar = Calendar(tempStartDate, tempEndDate, placeName,url)
+    return aCalendar 
 
 # Assign Times to Schedule
-# Purpose: Take in a schedule and list of hours, and assign listed hours to appropirate
+# Purpose: Take in a schedule and list of hours, and assign listed hours to appropriate
 # day of the week in the schedule
-def assignTimesToSchedule(aSchedule,dayOfWeekHoursList, list_of_schedules):
+def assign_times_to_calendar(aSchedule,dayOfWeekHoursList, list_of_schedules):
     day = None
     tempStartTime = None
     tempEndTime = None
@@ -127,7 +89,7 @@ def assignTimesToSchedule(aSchedule,dayOfWeekHoursList, list_of_schedules):
             tempStartTime = None
             tempEndTime = None             
 
-        # If itme is not a date it must be a time therefore append it to schedule hours
+        # If item is not a date it must be a time therefore append it to schedule hours
         # Can be in the format "Closed" or an actual time value
         elif item == 'CLOSED':
             value = aSchedule.addHours(day, item)
@@ -176,12 +138,12 @@ def find_tables(soup):
 
 # get_Tables
 # Purpose: Find Tables on page (certain tables hold hours of opperation)
-def get_Tables(soup, list_of_schedules, schedules_on_this_page):
+def get_tables(soup, list_of_schedules, schedules_on_this_page):
     #Get all the tables containing hours of opperation on current webpage
     tableList = find_tables(soup)
 
     for aTable in tableList:
-        assignTimesToSchedule(schedules_on_this_page[tableList.index(aTable)],(find_hours(aTable)), list_of_schedules)
+        assign_times_to_calendar(schedules_on_this_page[tableList.index(aTable)],(find_hours(aTable)), list_of_schedules)
 
 
 # Find Hours

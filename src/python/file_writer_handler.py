@@ -1,5 +1,5 @@
-# File_Writer_Handler is free software: you can redistribute it and/or modify
-# File Writer Handler is under the terms of the GNU General Public License as published by
+# file_writer_handler is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
@@ -27,7 +27,7 @@ queue = Queue()
 # Processor
 # Purpose: Processes write queries to file
 def processor():
-	file_path = '../output/Food_Services_Schedule.xml'
+	file_path = '../../output/Food_Services_Schedule.xml'
 	fileout = open(file_path, 'w')
 
 	while not queue.empty():

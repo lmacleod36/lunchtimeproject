@@ -1,4 +1,4 @@
-# UVic_Food_Service_Hours is free software: you can redistribute it and/or modify
+# setup is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -14,12 +14,10 @@
 # PURPOSE: 
 # 
 
-
-
 import ConfigParser
 import os.path
 from datetime import date
-from UVic_Food_Service_Hours import get_schedules
+from calendar_creator import get_calendars
 
 
 # Initiate the Config Parser
@@ -41,8 +39,10 @@ def get_config_section(section, Config):
     for option in options:
         try:
             a_Dictionary[option] = Config.get(section, option)
+            
             if dict1[option] == -1:
                 DebugPrint("skip: %s" % option)
+            print a_Dictionary[option]
         except:
             print("exception on %s!" % option)
             a_Dictionary[option] = None
@@ -84,14 +84,14 @@ def setup():
     last_update = get_config_section('LastRunDate', Config)['lastupdate']
 
     # Compare update date to current date, if different, update data
-     if not str(date.today()) == str(last_update):
+    if not str(date.today()) == str(last_update):
         print 'Updating Data'
     set_last_update(Config)
-    returnValue = get_schedules(food_locations_dictionary)
+    # returnValue = get_calendars(food_locations_dictionary)
 
     #For Testing Without Internet Connection
     # testDictionary= {'Test Spot':'../test/test_page_biblio.html'}
-    # returnValue = get_schedules(testDictionary)
+    # returnValue = get_calendars(testDictionary)
 
 # Main
 setup()

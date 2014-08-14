@@ -1,4 +1,4 @@
-# TermSchedule is free software: you can redistribute it and/or modify
+# calendar.py is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -11,13 +11,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #==================================================================
-# PURPOSE:
+# PURPOSE: methods and variables needed for storing calendar information
 # 
 
 
 # Term Schedule
-# Purpose: Class that holds information used to create the xml schemas
-class TermSchedule:
+# Purpose: Class that holds information used to create the xml and json schemas
+class Calendar:
     def __init__(self, startDate, endDate, name, url):
         self.name = name
         self.startDate = startDate
@@ -36,7 +36,7 @@ class TermSchedule:
 
 
 # Add Hours
-# Purpose: Add the hours of opperation to a particular day
+# Purpose: Add the hours of operation to a particular day
 # Extra args represent hours, can either be 'Closed' or two time values (eg 5:00pm, 6:00pm)        
     def addHours(self, day, *args):
         if day in self.hours:
