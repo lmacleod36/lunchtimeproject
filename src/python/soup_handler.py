@@ -14,8 +14,8 @@
 # PURPOSE: functions related to manipulating the soup of webpage information
 # 
 
-
 from BeautifulSoup import BeautifulSoup
+import calendar_creator
 import urllib2
 
 # Find Data in Soup
@@ -26,13 +26,13 @@ def find_data_in_soup(soup):
     linesWithH4Tags = soup.findAll('h4')
 
     # Strip hours out of h4 tags
-    listOfRelevantData = get_lines_with_hours(linesWithH4Tags)
+    listOfRelevantData = calendar_creator.get_lines_with_hours(linesWithH4Tags)
     
     # After the above call we now have a list of strings
     # Example string: 'Hours of operation between the dates of Saturday, 
     # Apr 26, 2014 and Wednesday, Aug 20, 2014'
     for item in listOfRelevantData:
-        aList.extend(get_months(item))
+        aList.extend(calendar_creator.get_months(item))
 
     return aList
 

@@ -40,9 +40,6 @@ def get_config_section(section, Config):
         try:
             a_Dictionary[option] = Config.get(section, option)
             
-            if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
-            print a_Dictionary[option]
         except:
             print("exception on %s!" % option)
             a_Dictionary[option] = None
@@ -87,7 +84,7 @@ def setup():
     if not str(date.today()) == str(last_update):
         print 'Updating Data'
     set_last_update(Config)
-    # returnValue = get_calendars(food_locations_dictionary)
+    returnValue = get_calendars(food_locations_dictionary)
 
     #For Testing Without Internet Connection
     # testDictionary= {'Test Spot':'../test/test_page_biblio.html'}

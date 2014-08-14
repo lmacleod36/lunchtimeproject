@@ -80,7 +80,7 @@ def assign_times_to_calendar(aSchedule,dayOfWeekHoursList, list_of_schedules):
     day = None
     tempStartTime = None
     tempEndTime = None
-    aQueue = Queue()
+    aQueue = Queue.Queue()
 
     for item in dayOfWeekHoursList:
         # If item is a date: start gathering info for new day of the week
