@@ -44,10 +44,11 @@ def make_soup(aUrl):
     #Testing with internet
     try:
         webpage = urllib2.urlopen(aUrl)
+        soup = BeautifulSoup(webpage.read())
     except:
         print "failed to read webpage"
         
-    soup = BeautifulSoup(webpage.read())
+    
 
     #Testing without internet
     # try:

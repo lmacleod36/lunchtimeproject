@@ -62,8 +62,10 @@ def get_calendars(placesDictionary):
     for key, value in placesDictionary.iteritems():
         schedules_on_this_page, soup = get_dates(value, key)
         get_tables(soup, list_of_schedules, schedules_on_this_page)
-        
+        print key, value
+    
     write_to_Xml(list_of_schedules)
+    write_to_Json(list_of_schedules)
     return True
 
 
@@ -172,7 +174,10 @@ def find_hours(table):
         # check if at least one 'm' is found
         if item.find('m') > 0:
             tempList = item.split('m')
-            result[result.index(item)] = tempList[0]+'m'
+            newValue = tempList[0]+'m'
+            print newValue
+            result[result.index(item)] = newValue
+
     return result
 
 

@@ -14,9 +14,13 @@
 # PURPOSE: Take UVic food service calendar data and exports it in JSON
 # 
 
+import json
+from file_writer_handler import send_job, execute_jobs
 
-def write_to_Json():
-	pass
+
+def write_to_Json(list_of_schedules):
+	for item in list_of_schedules:
+		print item.name
 
 def convert_to_Json():
 	pass
