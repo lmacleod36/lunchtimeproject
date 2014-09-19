@@ -26,8 +26,7 @@ queue = Queue()
 
 # Processor
 # Purpose: Processes write queries to file
-def processor():
-	file_path = '../../output/Food_Services_Schedule.xml'
+def processor(file_path):
 	fileout = open(file_path, 'w')
 
 	while not queue.empty():
@@ -45,8 +44,8 @@ def send_job(job):
 
 # Execute Job
 # Purpose: Process for writing to file 
-def execute_jobs():
-	writer = Process(target=processor)
+def execute_jobs(file_path):
+	writer = Process(target=processor(file_path))
 	writer.start()
 	writer.join()
 
